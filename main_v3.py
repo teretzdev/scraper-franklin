@@ -3,7 +3,8 @@ import re
 import csv
 import openpyxl
 import PyPDF2
-def parsePDF(pdfPath):
+def processAndWriteToXlsx():
+    def parsePDF(pdfPath):
     with open(pdfPath, 'rb') as f:
         reader = PyPDF2.PdfReader(f)
         text = []
@@ -77,9 +78,7 @@ def prepareRecordForCsv(record):
     }
 
 
-if __name__ == "__main__":
-    processAndWriteToXlsx()
-if __name__ == "__main__":
+    if __name__ == "__main__":
     try:
         wb = openpyxl.Workbook()
         ws = wb.active
@@ -122,47 +121,8 @@ if __name__ == "__main__":
         print(f"Total records processed: {processed_count}")
         print(f"Total records expected: {len(records)}")
         wb.save('inmate_records.xlsx')
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-if __name__ == "__main__":
-    processAndWriteToXlsx()
-    ...
-    for record in records:
-        ...
-    print(f"Total records processed: {processed_count}")
-    print(f"Total records expected: {len(records)}")
-    wb.save('inmate_records.xlsx')
-if __name__ == "__main__":
-    processAndWriteToXlsx()
-    ...
-    for record in records:
-        if record.strip() == '':
-            continue
-        recordData = prepareRecordForCsv(record)
-        if recordData['LastName']:
-            ws.append([
-                recordData['LastName'],
-                recordData['FirstName'],
-                recordData['MiddleName'],
-                recordData['Address'],
-                recordData['City'],
-                recordData['State'],
-                recordData['ZipCode'],
-                recordData['ArrestStatus'],
-                recordData['Charge1Desc'],
-                recordData['Charge1WarrantNumber'],
-                recordData['Charge2Desc'],
-                recordData['Charge2WarrantNumber'],
-                recordData['Charge3Desc'],
-                recordData['Charge3WarrantNumber'],
-            ])
-            processed_count += 1
-        else:
-            print(f"Skipped record due to empty last name or format mismatch: {record}")
-    print(f"Total records processed: {processed_count}")
-    print(f"Total records expected: {len(records)}")
-    wb.save('inmate_records.xlsx')
+            except Exception as e:
+                print(f"An error occurred: {e}")
 
 
 processAndWriteToXlsx()
