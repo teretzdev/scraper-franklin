@@ -4,12 +4,12 @@ import csv
 import openpyxl
 import PyPDF2
 def parsePDF(pdfPath):
-    with open(pdfPath, 'rb') as f:
-        reader = PyPDF2.PdfReader(f)
-        text = []
-        for page in reader.pages:
-            text.append(page.extract_text())
-    return '\n'.join(text)
+        with open(pdfPath, 'rb') as f:
+            reader = PyPDF2.PdfReader(f)
+            text = []
+            for page in reader.pages:
+                text.append(page.extract_text())
+        return '\n'.join(text)
         return '\n'.join(text)
 
 def prepareRecordForCsv(record):
