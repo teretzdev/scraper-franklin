@@ -1,9 +1,15 @@
 import os
 import re
 import csv
-import pdf
+import PyPDF2
 import xl
-from pdfparser import parsePDF
+def parsePDF(pdfPath):
+    with open(pdfPath, 'rb') as f:
+        reader = PyPDF2.PdfFileReader(f)
+        text = []
+        for page in range(reader.numPages):
+            text.append(reader.getPage(page).extractText())
+        return '\n'.join(text)
 
 def prepareRecordForCsv(record):
     fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)\s*(\d+\s[A-Z].+?),\s*([A-Z ]+),\s*([A-Z]{2})\s*(\d{5})\s*(ARRESTED ON\s+WARRANT|24 HOUR HOLD|SERVING SENTENCE|HOLD FOR USMS|FEDERAL DETAINER|PROBATION VIOLATION|BOOK AND RELEASE)', record)
@@ -66,7 +72,7 @@ def prepareRecordForCsv(record):
 
 def processAndWriteToCsv():
     pdfPath = 'output.pdf'
-    pdfText = parsePDF(pdfPath)
+    pdfText = parsePDF(pdfPath)  # Now using PyPDF2 for PDF text extraction
     print(pdfText)
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
     constRecords = recordPattern.split(pdfText)
