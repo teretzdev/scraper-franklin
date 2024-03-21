@@ -86,10 +86,27 @@ def processAndWriteToXlsx():
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
     constRecords = recordPattern.split(pdfText)
     records = []
-    for i in range(len(constRecords)):
-        record_lines = [line for line in constRecords[i].split('\n') if line.strip() != '']
-        if record_lines:  # Only add non-empty records
-            records.append(record_lines)
+    for record in constRecords:
+        if record.strip() == '':
+            continue
+        constRecord = prepareRecordForCsv(record)
+        if constRecord['LastName'] != '':
+            ws.append([
+                constRecord['LastName'],
+                constRecord['FirstName'],
+                constRecord['MiddleName'],
+                constRecord['Address'],
+                constRecord['City'],
+                constRecord['State'],
+                constRecord['ZipCode'],
+                constRecord['ArrestStatus'],
+                constRecord['Charge1Desc'],
+                constRecord['Charge1WarrantNumber'],
+                constRecord['Charge2Desc'],
+                constRecord['Charge2WarrantNumber'],
+                constRecord['Charge3Desc'],
+                constRecord['Charge3WarrantNumber'],
+            ])
 
     wb = openpyxl.Workbook()
     ws = wb.active
