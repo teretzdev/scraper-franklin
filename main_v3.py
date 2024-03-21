@@ -82,12 +82,18 @@ def processAndWriteToXlsx():
     ws = wb.active
     ws.title = "Inmate Records"
     headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
+    ws.append(headers)  # Append the headers to the worksheet
     # Removed duplicate line appending headers to the worksheet
 
     pdf_path = 'Franklin.pdf'
     pdf_text = parsePDF(pdf_path)
     record_pattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
-    records = record_pattern.split(pdf_text)[1:]  # Skip the first entry which is the header
+    records = record_pattern.split(pdf_text)
+    if records:
+        records = records[1:]  # Skip the first entry which is the header
+    else:
+        print("No records found in the PDF.")
+        return
     processed_count = 0
 def processAndWriteToXlsx():
     ...
