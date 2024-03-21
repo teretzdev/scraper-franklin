@@ -80,32 +80,40 @@ def prepareRecordForCsv(record):
 
 if __name__ == "__main__":
     try:
-        processAndWriteToXlsx()
-                recordData = prepareRecordForCsv(record)
-                if recordData['LastName']:
-                    ws.append([
-                        recordData['LastName'],
-                        recordData['FirstName'],
-                        recordData['MiddleName'],
-                        recordData['Address'],
-                        recordData['City'],
-                        recordData['State'],
-                        recordData['ZipCode'],
-                        recordData['ArrestStatus'],
-                        recordData['Charge1Desc'],
-                        recordData['Charge1WarrantNumber'],
-                        recordData['Charge2Desc'],
-                        recordData['Charge2WarrantNumber'],
-                        recordData['Charge3Desc'],
-                        recordData['Charge3WarrantNumber'],
-                    ])
-                    processed_count += 1
-                else:
-                    print(f"Skipped record due to empty last name or format mismatch: {record}")
-            print(f"Total records processed: {processed_count}")
-            print(f"Total records expected: {len(records)}")
-            wb.save('inmate_records.xlsx')
-        processAndWriteToXlsx()
+        pdfText = parsePDF('Franklin.pdf')
+        records = pdfText.split('\n')
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.append([
+            'LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus',
+            'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber'
+        ])
+        processed_count = 0
+        for record in records:
+            recordData = prepareRecordForCsv(record)
+            if recordData['LastName']:
+                ws.append([
+                    recordData['LastName'],
+                    recordData['FirstName'],
+                    recordData['MiddleName'],
+                    recordData['Address'],
+                    recordData['City'],
+                    recordData['State'],
+                    recordData['ZipCode'],
+                    recordData['ArrestStatus'],
+                    recordData['Charge1Desc'],
+                    recordData['Charge1WarrantNumber'],
+                    recordData['Charge2Desc'],
+                    recordData['Charge2WarrantNumber'],
+                    recordData['Charge3Desc'],
+                    recordData['Charge3WarrantNumber'],
+                ])
+                processed_count += 1
+            else:
+                print(f"Skipped record due to empty last name or format mismatch: {record}")
+        print(f"Total records processed: {processed_count}")
+        print(f"Total records expected: {len(records)}")
+        wb.save('inmate_records.xlsx')
     except Exception as e:
         print(f"An error occurred: {e}")
 
