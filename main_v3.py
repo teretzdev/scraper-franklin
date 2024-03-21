@@ -77,7 +77,8 @@ def prepareRecordForCsv(record):
     }
 
 
-def processAndWriteToXlsx():
+if __name__ == "__main__":
+    processAndWriteToXlsx()
     try:
         wb = openpyxl.Workbook()
         ws = wb.active
@@ -88,10 +89,8 @@ def processAndWriteToXlsx():
         pdf_path = 'Franklin.pdf'
         pdf_text = parsePDF(pdf_path)
         record_pattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
-        all_records = record_pattern.split(pdf_text)
-        processed_count = 0  # Initialize processed records counter
-        if all_records:
-            records = all_records[1:]  # Skip the first entry which is the header
+        records = record_pattern.split(pdf_text)[1:]  # Skip the first entry which is the header
+        processed_count = 0
             print(f"Records to process: {len(records)}")
             for record in records:
                 print(f"Processing record: {record[:50]}...")  # Print the first 50 characters of the record
@@ -126,14 +125,16 @@ def processAndWriteToXlsx():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def processAndWriteToXlsx():
+if __name__ == "__main__":
+    processAndWriteToXlsx()
     ...
     for record in records:
         ...
     print(f"Total records processed: {processed_count}")
     print(f"Total records expected: {len(records)}")
     wb.save('inmate_records.xlsx')
-def processAndWriteToXlsx():
+if __name__ == "__main__":
+    processAndWriteToXlsx()
     ...
     for record in records:
         if record.strip() == '':
