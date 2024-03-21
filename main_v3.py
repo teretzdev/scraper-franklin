@@ -12,21 +12,19 @@ def parsePDF(pdfPath):
         return '\n'.join(text)
 
 def prepareRecordForCsv(record):
-    fullNameMatch = None
     lastName = ''
     firstName = ''
     middleName = ''
-    fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)\s*(\d+\s[A-Z].+?),\s*([A-Z ]+),\s*([A-Z]{2})\s*(\d{5})\s*(ARRESTED ON\s+WARRANT|24 HOUR HOLD|SERVING SENTENCE|HOLD FOR USMS|FEDERAL DETAINER|PROBATION VIOLATION|BOOK AND RELEASE)', record)
+    fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
 def prepareRecordForCsv(record):
     ...
     if fullNameMatch:
-        constNameParts = fullNameMatch.group().split(', ')
-        lastName = constNameParts[0].strip()
-        constFirstMiddleNameParts = constNameParts[1].split() if len(constNameParts) > 1 else []
-        firstName = constFirstMiddleNameParts[0] if constFirstMiddleNameParts else ''
-        middleName = ' '.join(constFirstMiddleNameParts[1:]) if len(constFirstMiddleNameParts) > 1 else ''
-        firstName = constFirstMiddleNameParts[0] if constFirstMiddleNameParts else ''
-        middleName = ' '.join(constFirstMiddleNameParts[1:]) if len(constFirstMiddleNameParts) > 1 else ''
+        nameParts = fullNameMatch.groups()
+        lastName = nameParts[0].strip()
+        firstMiddleNameParts = nameParts[1].split()
+        firstName = firstMiddleNameParts[0] if firstMiddleNameParts else ''
+        middleName = ' '.join(firstMiddleNameParts[1:]) if len(firstMiddleNameParts) > 1 else ''
+
     ...
 
     addressMatch = re.match(r'(\d+ [A-Z\s]+),\s*([A-Z\s]+),\s*([A-Z]{2})\s*(\d+)', record)
@@ -64,10 +62,6 @@ def prepareRecordForCsv(record):
     while len(charges) < 3:
         charges.append({'desc': 'N/A', 'warrantNumber': 'N/A'})
 
-    # Ensuring the charges array has at least 3 elements filled with 'N/A' if less than 3 charges exist
-    while len(charges) < 3:
-        charges.append({'desc': 'N/A', 'warrantNumber': 'N/A'})
-
     return {
         'LastName': lastName,
         'FirstName': firstName,
@@ -95,10 +89,6 @@ def processAndWriteToXlsx():
     print(pdfText)
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
     records = recordPattern.split(pdfText)
-    for record in records:
-        if record.strip() == '':
-            continue
-        recordData = prepareRecordForCsv(record)
     for record in records:
         if record.strip() == '':
             continue
