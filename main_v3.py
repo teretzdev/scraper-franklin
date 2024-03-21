@@ -84,10 +84,10 @@ def processAndWriteToXlsx():
     headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
     ws.append(headers)  # This line is correct and should remain as is
 
-    pdfPath = 'Franklin.pdf'
-    pdfText = parsePDF(pdfPath)
-    recordPattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
-    records = recordPattern.split(pdfText)[1:]  # Skip the first entry which is the header
+    pdf_path = 'Franklin.pdf'
+    pdf_text = parsePDF(pdf_path)
+    record_pattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
+    records = record_pattern.split(pdf_text)[1:]  # Skip the first entry which is the header
     processed_count = 0
 def processAndWriteToXlsx():
     ...
