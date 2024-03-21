@@ -78,12 +78,14 @@ def prepareRecordForCsv(record):
 
 
 def processAndWriteToXlsx():
-    pdfPath = 'Franklin.pdf'  # Updated to the correct PDF file name
-    pdfText = parsePDF(pdfPath)  # Now using PyPDF2 for PDF text extraction
-    pdfPath = 'Franklin.pdf'
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Inmate Records"
+    headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
+    ws.append(headers)  # This line is correct and should remain as is
+
     pdfPath = 'Franklin.pdf'
     pdfText = parsePDF(pdfPath)
-    print(pdfText)
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
     records = recordPattern.split(pdfText)
     for record in records:
@@ -107,13 +109,6 @@ def processAndWriteToXlsx():
                 recordData['Charge3Desc'],
                 recordData['Charge3WarrantNumber'],
             ])
-
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Inmate Records"
-    headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
-    ws.append(headers)  # This line is correct and should remain as is
-
     print(len(records))
     wb.save('inmate_records.xlsx')
 
