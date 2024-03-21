@@ -95,7 +95,7 @@ def processAndWriteToXlsx():
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
     records = recordPattern.split(pdfText)
     for record in records:
-    for record in constRecords:
+    for record in records:
         if record.strip() == '':
             continue
         recordData = prepareRecordForCsv(record)
