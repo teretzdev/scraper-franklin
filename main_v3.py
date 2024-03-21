@@ -6,7 +6,7 @@ import PyPDF2
 def processAndWriteToXlsx():
     def parsePDF(pdfPath):
         with open(pdfPath, 'rb') as f:
-        reader = PyPDF2.PdfReader(f)
+            reader = PyPDF2.PdfReader(f)
         text = []
         for page in reader.pages:
             text.append(page.extract_text())
