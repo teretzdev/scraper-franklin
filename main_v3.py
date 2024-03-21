@@ -88,9 +88,10 @@ def processAndWriteToXlsx():
         pdf_path = 'Franklin.pdf'
         pdf_text = parsePDF(pdf_path)
         record_pattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
-        records = record_pattern.split(pdf_text)
-        if records:
-            records = records[1:]  # Skip the first entry which is the header
+        all_records = record_pattern.split(pdf_text)
+        processed_count = 0  # Initialize processed records counter
+        if all_records:
+            records = all_records[1:]  # Skip the first entry which is the header
             print(f"Records to process: {len(records)}")
             for record in records:
                 print(f"Processing record: {record[:50]}...")  # Print the first 50 characters of the record
@@ -114,6 +115,7 @@ def processAndWriteToXlsx():
                         recordData['Charge3Desc'],
                         recordData['Charge3WarrantNumber'],
                     ])
+                    processed_count += 1
                 else:
                     print(f"Skipped record due to empty last name or format mismatch: {record}")
             print(f"Total records processed: {processed_count}")
