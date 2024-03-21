@@ -87,8 +87,9 @@ def processAndWriteToXlsx():
     constRecords = recordPattern.split(pdfText)
     records = []
     for i in range(len(constRecords)):
-        record_lines = constRecords[i].split('\n')
-        records.extend([line for line in record_lines if line.strip() != ''])
+        record_lines = [line for line in constRecords[i].split('\n') if line.strip() != '']
+        if record_lines:  # Only add non-empty records
+            records.append(record_lines)
 
     wb = openpyxl.Workbook()
     ws = wb.active
