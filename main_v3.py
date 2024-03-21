@@ -82,6 +82,8 @@ def processAndWriteToXlsx():
     ws = wb.active
     ws.title = "Inmate Records"
     headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
+    ws.append(headers)
+    # The following lines should be added to ensure 'records' is defined within the function scope
     ws.append(headers)  # This line is correct and should remain as is
 
     pdf_path = 'Franklin.pdf'
@@ -92,6 +94,10 @@ def processAndWriteToXlsx():
 def processAndWriteToXlsx():
     ...
     for record in records:
+        ...
+    print(f"Total records processed: {processed_count}")
+    print(f"Total records expected: {len(records)}")
+    wb.save('inmate_records.xlsx')
         if record.strip() == '':
             continue
         recordData = prepareRecordForCsv(record)
