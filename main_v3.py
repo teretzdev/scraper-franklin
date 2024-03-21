@@ -89,6 +89,8 @@ def processAndWriteToXlsx():
     recordPattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
     records = recordPattern.split(pdfText)[1:]  # Skip the first entry which is the header
     processed_count = 0
+def processAndWriteToXlsx():
+    ...
     for record in records:
         if record.strip() == '':
             continue
@@ -111,6 +113,8 @@ def processAndWriteToXlsx():
                 recordData['Charge3WarrantNumber'],
             ])
             processed_count += 1
+        else:
+            print(f"Skipped record: {record}")
         else:
             print(f"Skipped record due to empty last name or format mismatch: {record}")
     print(f"Total records processed: {processed_count}")
