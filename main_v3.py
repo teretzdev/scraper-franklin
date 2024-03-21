@@ -63,6 +63,10 @@ def prepareRecordForCsv(record):
     while len(charges) < 3:
         charges.append({'desc': 'N/A', 'warrantNumber': 'N/A'})
 
+    # Ensuring the charges array has at least 3 elements filled with 'N/A' if less than 3 charges exist
+    while len(charges) < 3:
+        charges.append({'desc': 'N/A', 'warrantNumber': 'N/A'})
+
     return {
         'LastName': lastName,
         'FirstName': firstName,
