@@ -122,25 +122,6 @@ def processAndWriteToXlsx():
     ws.title = "Inmate Records"
     headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
     ws.append(headers)  # This line is correct and should remain as is
-    for r in records:
-        constRecord = prepareRecordForCsv(r)
-        if constRecord['LastName'] != '':
-            ws.append([
-                constRecord['LastName'],
-                constRecord['FirstName'],
-                constRecord['MiddleName'],
-                constRecord['Address'],
-                record['City'],
-                constRecord['State'],
-                constRecord['ZipCode'],
-                constRecord['ArrestStatus'],
-                constRecord['Charge1Desc'],
-                constRecord['Charge1WarrantNumber'],
-                record['Charge2Desc'],
-                constRecord['Charge2WarrantNumber'],
-                constRecord['Charge3Desc'],
-                constRecord['Charge3WarrantNumber'],
-            ])  # This line is correct and should remain as is
 
     print(len(records))
     wb.save('inmate_records.xlsx')
