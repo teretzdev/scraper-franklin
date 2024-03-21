@@ -34,12 +34,17 @@ def prepareRecordForCsv(record):
     state = ''
     zipCode = ''
     if addressMatch:
-        address = addressMatch[0].split(',')[0].strip()
-        if addressMatch[0].split(',').length > 1:
-            constCityStateZip = addressMatch[0].split(',')[1].strip().split(' ')
-            city = constCityStateZip[0]
-            state = constCityStateZip[1]
-            zipCode = constCityStateZip[2]
+        addressParts = addressMatch.group().split(',')
+        address = addressParts[0].strip()
+        if len(addressParts) > 1:
+            cityStateZip = addressParts[1].strip().split()
+            if len(cityStateZip) >= 3:
+                city = cityStateZip[0]
+                state = cityStateZip[1]
+                zipCode = cityStateZip[2]
+            elif len(cityStateZip) == 2:
+                city = cityStateZip[0]
+                state = cityStateZip[1]
 
     arrestStatusMatch = re.match(r'(ARRESTED ON\s+WARRANT|HOLD FOR USMS|24 HOUR HOLD|SERVING SENTENCE|HOLD FOR USMS|FEDERAL DETAINER|PROBATION VIOLATION|BOOK AND RELEASE)', record)
     arrestStatus = ''
