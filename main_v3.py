@@ -17,8 +17,8 @@ def prepareRecordForCsv(record):
     firstName = ''
     middleName = ''
     if fullNameMatch:
-        constName = fullNameMatch[0].split(', ')[0]
-        lastName = constName.split(',')[0]
+        constNameParts = fullNameMatch[0].split(', ')
+        lastName = constNameParts[0]
         constFirstMiddleNameParts = constNameParts[1].split(' ') if len(constNameParts) > 1 else []
         firstName = constFirstMiddleNameParts[0] if constFirstMiddleNameParts else ''
         middleName = ' '.join(constFirstMiddleNameParts[1:]) if len(constFirstMiddleNameParts) > 1 else ''
