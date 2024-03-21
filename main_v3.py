@@ -70,7 +70,7 @@ def prepareRecordForCsv(record):
 
 
 def processAndWriteToCsv():
-    pdfPath = 'output.pdf'
+    pdfPath = 'Franklin.pdf'  # Updated to the correct PDF file name
     pdfText = parsePDF(pdfPath)  # Now using PyPDF2 for PDF text extraction
     print(pdfText)
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
