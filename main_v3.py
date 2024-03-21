@@ -88,7 +88,12 @@ def processAndWriteToXlsx():
     pdf_path = 'Franklin.pdf'
     pdf_text = parsePDF(pdf_path)
     record_pattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
-    records = record_pattern.split(pdf_text)[1:]  # Skip the first entry which is the header
+    records = record_pattern.split(pdf_text)
+    if records:
+        records = records[1:]  # Skip the first entry which is the header
+    else:
+        print("No records found in the PDF.")
+        return
     processed_count = 0
 def processAndWriteToXlsx():
     ...
