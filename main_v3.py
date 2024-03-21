@@ -96,6 +96,9 @@ def processAndWriteToXlsx():
     print(f"Total records processed: {processed_count}")
     print(f"Total records expected: {len(records)}")
     wb.save('inmate_records.xlsx')
+def processAndWriteToXlsx():
+    ...
+    for record in records:
         if record.strip() == '':
             continue
         recordData = prepareRecordForCsv(record)
@@ -117,11 +120,11 @@ def processAndWriteToXlsx():
                 recordData['Charge3WarrantNumber'],
             ])
             processed_count += 1
-        # Removed duplicate else block
         else:
             print(f"Skipped record due to empty last name or format mismatch: {record}")
     print(f"Total records processed: {processed_count}")
     print(f"Total records expected: {len(records)}")
+    wb.save('inmate_records.xlsx')
     print(len(records))
     wb.save('inmate_records.xlsx')
 
