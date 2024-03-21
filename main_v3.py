@@ -19,7 +19,9 @@ def prepareRecordForCsv(record):     non_record_patterns = [
          if re.search(pattern, record):
              return None  # Return None to indicate this is not a record
 
-    lastName, firstName, middleName = '', '', ''
+    lastName = ''
+    firstName = ''
+    middleName = ''
     fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
     ...
     if fullNameMatch:
