@@ -12,7 +12,14 @@ def parsePDF(pdfPath):
         return '\n'.join(text)
         return '\n'.join(text)
 
-def prepareRecordForCsv(record):
+def prepareRecordForCsv(record):    non_record_patterns = [
+        r'MISC\. ORDINANCE VIOLATION',
+        r'© \d{4} - \d{4} Omnigo Software St\. Louis MO omnigo\.com'
+    ]
+    for pattern in non_record_patterns:
+        if re.search(pattern, record):
+            return None  # Return None to indicate this is not a record
+
     lastName, firstName, middleName = '', '', ''
     fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
     ...
@@ -91,7 +98,9 @@ if __name__ == "__main__":
         processed_count = 0
         for record in records:
             recordData = prepareRecordForCsv(record)
-            if recordData['LastName']:
+            if recordData is None:
+                continue  # Skip non-records
+            elif recordData['LastName']:
                 ws.append([
                     recordData['LastName'],
                     recordData['FirstName'],
