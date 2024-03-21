@@ -82,6 +82,7 @@ if __name__ == "__main__":
             'LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus',
             'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber'
         ])
+        name_count = 0
         processed_count = 0
         for record in records:
             recordData = prepareRecordForCsv(record)
@@ -105,9 +106,11 @@ if __name__ == "__main__":
                     recordData['Charge3WarrantNumber'],
                 ])
                 processed_count += 1
+                name_count += 1
             else:
                 print(f"Skipped record due to empty last name or format mismatch: {record}")
         print(f"Total records processed: {processed_count}")
+        print(f"Total names counted: {name_count}")
         print(f"Total records expected: {len(records)}")
         wb.save('inmate_records.xlsx')
     except Exception as e:
