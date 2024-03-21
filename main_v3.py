@@ -94,7 +94,7 @@ def processAndWriteToXlsx():
     print(pdfText)
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
     records = recordPattern.split(pdfText)
-    records = []
+    for record in records:
     for record in constRecords:
         if record.strip() == '':
             continue
