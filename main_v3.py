@@ -12,10 +12,8 @@ def parsePDF(pdfPath):
         return '\n'.join(text)
 
 def prepareRecordForCsv(record):
-    fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
     lastName, firstName, middleName = '', '', ''
     fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
-def prepareRecordForCsv(record):
     ...
     if fullNameMatch:
         nameParts = fullNameMatch.groups()
@@ -79,10 +77,10 @@ def prepareRecordForCsv(record):
     }
 
 
-def processAndWriteToCsv():
+def processAndWriteToXlsx():
     pdfPath = 'Franklin.pdf'  # Updated to the correct PDF file name
     pdfText = parsePDF(pdfPath)  # Now using PyPDF2 for PDF text extraction
-def processAndWriteToXlsx():
+    pdfPath = 'Franklin.pdf'
     pdfPath = 'Franklin.pdf'
     pdfText = parsePDF(pdfPath)
     print(pdfText)
