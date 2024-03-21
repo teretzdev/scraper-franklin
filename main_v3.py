@@ -92,7 +92,7 @@ def processAndWriteToXlsx():
         if record.strip() == '':
             continue
         recordData = prepareRecordForCsv(record)
-        if recordData['LastName'] != '':
+        if recordData['LastName']:
             ws.append([
                 recordData['LastName'],
                 recordData['FirstName'],
@@ -109,6 +109,8 @@ def processAndWriteToXlsx():
                 recordData['Charge3Desc'],
                 recordData['Charge3WarrantNumber'],
             ])
+        else:
+            print(f"Skipped record due to empty last name: {record}")
     print(len(records))
     wb.save('inmate_records.xlsx')
 
