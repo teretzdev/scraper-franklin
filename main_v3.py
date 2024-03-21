@@ -2,7 +2,6 @@ import os
 import re
 import csv
 import PyPDF2
-import xl
 def parsePDF(pdfPath):
     with open(pdfPath, 'rb') as f:
         reader = PyPDF2.PdfFileReader(f)
