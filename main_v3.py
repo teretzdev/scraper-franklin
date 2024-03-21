@@ -4,13 +4,13 @@ import csv
 import openpyxl
 import PyPDF2
 def processAndWriteToXlsx():
-    def parsePDF(pdfPath):
-        with open(pdfPath, 'rb') as f:
-            reader = PyPDF2.PdfReader(f)
-        text = []
-        for page in reader.pages:
-            text.append(page.extract_text())
-        return '\n'.join(text)
+def parsePDF(pdfPath):
+    with open(pdfPath, 'rb') as f:
+        reader = PyPDF2.PdfReader(f)
+    text = []
+    for page in reader.pages:
+        text.append(page.extract_text())
+    return '\n'.join(text)
 
 def prepareRecordForCsv(record):
     lastName, firstName, middleName = '', '', ''
@@ -78,14 +78,15 @@ def prepareRecordForCsv(record):
     }
 
 
-    if __name__ == "__main__":
-    try:
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Inmate Records"
-        headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc',
+if __name__ == "__main__":
+        def processAndWriteToXlsx():
+        try:
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = "Inmate Records"
+            headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc',
 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
-        ws.append(headers)  # Append the headers to the worksheet
+            ws.append(headers)  # Append the headers to the worksheet
 
         pdf_path = 'Franklin.pdf'
         pdf_text = parsePDF(pdf_path)
@@ -121,8 +122,7 @@ def prepareRecordForCsv(record):
         print(f"Total records processed: {processed_count}")
         print(f"Total records expected: {len(records)}")
         wb.save('inmate_records.xlsx')
-            except Exception as e:
-                print(f"An error occurred: {e}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
 
-processAndWriteToXlsx()
