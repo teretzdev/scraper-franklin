@@ -5,7 +5,7 @@ import openpyxl
 import PyPDF2
 def parsePDF(pdfPath):
     with open(pdfPath, 'rb') as f:
-        reader = PyPDF2.PdfFileReader(f)
+        reader = PyPDF2.PdfReader(f)
         text = []
         for page in range(reader.numPages):
             text.append(reader.getPage(page).extractText())
