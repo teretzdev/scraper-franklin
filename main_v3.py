@@ -1,6 +1,7 @@
 import os
 import re
 import csv
+import openpyxl
 import PyPDF2
 def parsePDF(pdfPath):
     with open(pdfPath, 'rb') as f:
@@ -72,6 +73,9 @@ def prepareRecordForCsv(record):
 def processAndWriteToCsv():
     pdfPath = 'Franklin.pdf'  # Updated to the correct PDF file name
     pdfText = parsePDF(pdfPath)  # Now using PyPDF2 for PDF text extraction
+def processAndWriteToXlsx():
+    pdfPath = 'Franklin.pdf'
+    pdfText = parsePDF(pdfPath)
     print(pdfText)
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
     constRecords = recordPattern.split(pdfText)
@@ -79,13 +83,16 @@ def processAndWriteToCsv():
     for i in range(len(constRecords)):
         records = records + constRecords[i].split('\n')
 
-    with open('output.csv', 'w', newline='') as f:
-        headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
-        f.write(','.join(headers) + '\n')
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Inmate Records"
+    headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
+    ws.append(headers)
         for r in records:
             constRecord = prepareRecordForCsv(r)
             if constRecord['LastName'] != '': # Ensuring only valid records are added
-                f.write(','.join([
+            if constRecord['LastName'] != '':
+                ws.append([
                     constRecord['LastName'],
                     constRecord['FirstName'],
                     constRecord['MiddleName'],
@@ -100,9 +107,10 @@ def processAndWriteToCsv():
                     constRecord['Charge2WarrantNumber'],
                     constRecord['Charge3Desc'],
                     constRecord['Charge3WarrantNumber'],
-                ]) + '\n')
+                ])
 
     print(len(records))
+    wb.save('inmate_records.xlsx')
 
 
-processAndWriteToCsv()
+processAndWriteToXlsx()
