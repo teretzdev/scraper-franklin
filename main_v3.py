@@ -3,13 +3,13 @@ import re
 import csv
 import openpyxl
 import PyPDF2
-def processAndWriteToXlsx():
-    def parsePDF(pdfPath):
-        with open(pdfPath, 'rb') as f:
-            reader = PyPDF2.PdfReader(f)
-            text = []
-            for page in reader.pages:
-                text.append(page.extract_text())
+def parsePDF(pdfPath):
+    with open(pdfPath, 'rb') as f:
+        reader = PyPDF2.PdfReader(f)
+        text = []
+        for page in reader.pages:
+            text.append(page.extract_text())
+    return '\n'.join(text)
         return '\n'.join(text)
 
 def prepareRecordForCsv(record):
@@ -80,24 +80,7 @@ def prepareRecordForCsv(record):
 
 if __name__ == "__main__":
     try:
-        def processAndWriteToXlsx():
-            wb = openpyxl.Workbook()
-            ws = wb.active
-            ws.title = "Inmate Records"
-            headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc',
-'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
-            ws.append(headers)  # Append the headers to the worksheet
-
-            pdf_path = 'Franklin.pdf'
-            pdf_text = parsePDF(pdf_path)
-            record_pattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
-            records = record_pattern.split(pdf_text)[1:]  # Skip the first entry which is the header
-            processed_count = 0
-            print(f"Records to process: {len(records)}")
-            for record in records:
-                print(f"Processing record: {record[:50]}...")  # Print the first 50 characters of the record
-                if record.strip() == '':
-                    continue
+        processAndWriteToXlsx()
                 recordData = prepareRecordForCsv(record)
                 if recordData['LastName']:
                     ws.append([
