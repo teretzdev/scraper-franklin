@@ -38,7 +38,9 @@ def prepareRecordForCsv(record):
             zipCode = constCityStateZip[2]
 
     arrestStatusMatch = re.match(r'(ARRESTED ON\s+WARRANT|HOLD FOR USMS|24 HOUR HOLD|SERVING SENTENCE|HOLD FOR USMS|FEDERAL DETAINER|PROBATION VIOLATION|BOOK AND RELEASE)', record)
-    arrestStatus = arrestStatusMatch[0].replace('\n', ' ')
+    arrestStatus = ''
+    if arrestStatusMatch:
+        arrestStatus = arrestStatusMatch[0].replace('\n', ' ')
 
     chargesMatches = re.findall(r'([^\d]+)\s+(\d{2}[A-Z]{2}-CR\d{5,6})/g', record)
     charges = []
