@@ -16,15 +16,17 @@ def prepareRecordForCsv(record):
     lastName = ''
     firstName = ''
     middleName = ''
+def prepareRecordForCsv(record):
+    ...
     if fullNameMatch:
         constNameParts = fullNameMatch[0].split(', ')
         lastName = constNameParts[0]
         constFirstMiddleNameParts = constNameParts[1].split(' ') if len(constNameParts) > 1 else []
         firstName = constFirstMiddleNameParts[0] if constFirstMiddleNameParts else ''
         middleName = ' '.join(constFirstMiddleNameParts[1:]) if len(constFirstMiddleNameParts) > 1 else ''
-        firstName = constFirstMiddleName[0]
-        if len(constFirstMiddleName) > 1:
-            middleName = constFirstMiddleName[1]
+        firstName = constFirstMiddleNameParts[0] if constFirstMiddleNameParts else ''
+        middleName = ' '.join(constFirstMiddleNameParts[1:]) if len(constFirstMiddleNameParts) > 1 else ''
+    ...
 
     addressMatch = re.match(r'(\d+ [A-Z\s]+),\s*([A-Z\s]+),\s*([A-Z]{2})\s*(\d+)', record)
     address = ''
