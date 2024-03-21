@@ -51,7 +51,7 @@ def prepareRecordForCsv(record):
     if arrestStatusMatch:
         arrestStatus = arrestStatusMatch[0].replace('\n', ' ')
 
-    chargesMatches = re.findall(r'([^\d]+)\s+(\d{2}[A-Z]{2}-CR\d{5,6})/g', record)
+    chargesMatches = re.findall(r'([^\d]+)\s+(\d{2}[A-Z]{2}-CR\d{5,6})', record)
     charges = []
     for i in range(len(chargesMatches)):
         charges.append({
