@@ -11,6 +11,18 @@ def parsePDF(pdfPath):
     for page in reader.pages:
         text.append(page.extract_text())
     return '\n'.join(text)
+        with open(pdfPath, 'rb') as f:
+            reader = PyPDF2.PdfReader(f)
+        text = []
+        for page in reader.pages:
+            text.append(page.extract_text())
+        return '\n'.join(text)
+    with open(pdfPath, 'rb') as f:
+        reader = PyPDF2.PdfReader(f)
+    text = []
+    for page in reader.pages:
+        text.append(page.extract_text())
+    return '\n'.join(text)
 
 def prepareRecordForCsv(record):
     lastName, firstName, middleName = '', '', ''
