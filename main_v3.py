@@ -78,22 +78,51 @@ def prepareRecordForCsv(record):
 
 
 def processAndWriteToXlsx():
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Inmate Records"
-    headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
-    ws.append(headers)  # Append the headers to the worksheet
+    try:
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Inmate Records"
+        headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
+        ws.append(headers)  # Append the headers to the worksheet
 
-    pdf_path = 'Franklin.pdf'
-    pdf_text = parsePDF(pdf_path)
-    record_pattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
-    records = record_pattern.split(pdf_text)
-    if records:
-        records = records[1:]  # Skip the first entry which is the header
-    else:
-        print("No records found in the PDF.")
-        return
-    processed_count = 0
+        pdf_path = 'Franklin.pdf'
+        pdf_text = parsePDF(pdf_path)
+        record_pattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')  # Adjusted to match the start of a record based on name
+        records = record_pattern.split(pdf_text)
+        if records:
+            records = records[1:]  # Skip the first entry which is the header
+            print(f"Records to process: {len(records)}")
+            for record in records:
+                print(f"Processing record: {record[:50]}...")  # Print the first 50 characters of the record
+                if record.strip() == '':
+                    continue
+                recordData = prepareRecordForCsv(record)
+                if recordData['LastName']:
+                    ws.append([
+                        recordData['LastName'],
+                        recordData['FirstName'],
+                        recordData['MiddleName'],
+                        recordData['Address'],
+                        recordData['City'],
+                        recordData['State'],
+                        recordData['ZipCode'],
+                        recordData['ArrestStatus'],
+                        recordData['Charge1Desc'],
+                        recordData['Charge1WarrantNumber'],
+                        recordData['Charge2Desc'],
+                        recordData['Charge2WarrantNumber'],
+                        recordData['Charge3Desc'],
+                        recordData['Charge3WarrantNumber'],
+                    ])
+                else:
+                    print(f"Skipped record due to empty last name or format mismatch: {record}")
+            print(f"Total records processed: {processed_count}")
+            print(f"Total records expected: {len(records)}")
+            wb.save('inmate_records.xlsx')
+        else:
+            print("No records found in the PDF.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def processAndWriteToXlsx():
     ...
