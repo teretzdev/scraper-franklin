@@ -113,8 +113,8 @@ def processAndWriteToXlsx():
                 recordData['Charge3WarrantNumber'],
             ])
             processed_count += 1
-        else:
-            print(f"Skipped record: {record}")
+        elif not recordData['LastName']:
+            print(f"Skipped record due to empty last name or format mismatch: {record}")
         else:
             print(f"Skipped record due to empty last name or format mismatch: {record}")
     print(f"Total records processed: {processed_count}")
