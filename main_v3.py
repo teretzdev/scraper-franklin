@@ -12,9 +12,8 @@ def parsePDF(pdfPath):
         return '\n'.join(text)
 
 def prepareRecordForCsv(record):
-    lastName = ''
-    firstName = ''
-    middleName = ''
+    fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
+    lastName, firstName, middleName = '', '', ''
     fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
 def prepareRecordForCsv(record):
     ...
