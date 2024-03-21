@@ -88,6 +88,7 @@ def processAndWriteToXlsx():
     pdfText = parsePDF(pdfPath)
     recordPattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')
     records = recordPattern.split(pdfText)[1:]  # Skip the first entry which is the header
+    processed_count = 0
     for record in records:
         if record.strip() == '':
             continue
@@ -109,8 +110,11 @@ def processAndWriteToXlsx():
                 recordData['Charge3Desc'],
                 recordData['Charge3WarrantNumber'],
             ])
+            processed_count += 1
         else:
-            print(f"Skipped record due to empty last name: {record}")
+            print(f"Skipped record due to empty last name or format mismatch: {record}")
+    print(f"Total records processed: {processed_count}")
+    print(f"Total records expected: {len(records)}")
     print(len(records))
     wb.save('inmate_records.xlsx')
 
