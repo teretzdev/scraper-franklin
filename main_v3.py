@@ -86,7 +86,7 @@ def processAndWriteToXlsx():
 
     pdfPath = 'Franklin.pdf'
     pdfText = parsePDF(pdfPath)
-    recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
+    recordPattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')
     records = recordPattern.split(pdfText)
     for record in records:
         if record.strip() == '':
