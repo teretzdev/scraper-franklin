@@ -93,7 +93,7 @@ def processAndWriteToXlsx():
     pdfText = parsePDF(pdfPath)
     print(pdfText)
     recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
-    constRecords = recordPattern.split(pdfText)
+    records = recordPattern.split(pdfText)
     records = []
     for record in constRecords:
         if record.strip() == '':
@@ -101,17 +101,17 @@ def processAndWriteToXlsx():
         constRecord = prepareRecordForCsv(record)
         if constRecord['LastName'] != '':
             ws.append([
-                constRecord['LastName'],
+                record['LastName'],
                 constRecord['FirstName'],
                 constRecord['MiddleName'],
                 constRecord['Address'],
-                constRecord['City'],
+                record['City'],
                 constRecord['State'],
                 constRecord['ZipCode'],
                 constRecord['ArrestStatus'],
                 constRecord['Charge1Desc'],
                 constRecord['Charge1WarrantNumber'],
-                constRecord['Charge2Desc'],
+                record['Charge2Desc'],
                 constRecord['Charge2WarrantNumber'],
                 constRecord['Charge3Desc'],
                 constRecord['Charge3WarrantNumber'],
@@ -121,7 +121,7 @@ def processAndWriteToXlsx():
     ws = wb.active
     ws.title = "Inmate Records"
     headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
-    ws.append(headers)
+    ws.append(headers)  # This line is correct and should remain as is
     for r in records:
         constRecord = prepareRecordForCsv(r)
         if constRecord['LastName'] != '':
@@ -130,17 +130,17 @@ def processAndWriteToXlsx():
                 constRecord['FirstName'],
                 constRecord['MiddleName'],
                 constRecord['Address'],
-                constRecord['City'],
+                record['City'],
                 constRecord['State'],
                 constRecord['ZipCode'],
                 constRecord['ArrestStatus'],
                 constRecord['Charge1Desc'],
                 constRecord['Charge1WarrantNumber'],
-                constRecord['Charge2Desc'],
+                record['Charge2Desc'],
                 constRecord['Charge2WarrantNumber'],
                 constRecord['Charge3Desc'],
                 constRecord['Charge3WarrantNumber'],
-            ])
+            ])  # This line is correct and should remain as is
 
     print(len(records))
     wb.save('inmate_records.xlsx')
