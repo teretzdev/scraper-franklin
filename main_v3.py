@@ -98,23 +98,23 @@ def processAndWriteToXlsx():
     for record in constRecords:
         if record.strip() == '':
             continue
-        constRecord = prepareRecordForCsv(record)
-        if constRecord['LastName'] != '':
+        recordData = prepareRecordForCsv(record)
+        if recordData['LastName'] != '':
             ws.append([
-                record['LastName'],
-                constRecord['FirstName'],
-                constRecord['MiddleName'],
-                constRecord['Address'],
-                record['City'],
-                constRecord['State'],
-                constRecord['ZipCode'],
-                constRecord['ArrestStatus'],
-                constRecord['Charge1Desc'],
-                constRecord['Charge1WarrantNumber'],
-                record['Charge2Desc'],
-                constRecord['Charge2WarrantNumber'],
-                constRecord['Charge3Desc'],
-                constRecord['Charge3WarrantNumber'],
+                recordData['LastName'],
+                recordData['FirstName'],
+                recordData['MiddleName'],
+                recordData['Address'],
+                recordData['City'],
+                recordData['State'],
+                recordData['ZipCode'],
+                recordData['ArrestStatus'],
+                recordData['Charge1Desc'],
+                recordData['Charge1WarrantNumber'],
+                recordData['Charge2Desc'],
+                recordData['Charge2WarrantNumber'],
+                recordData['Charge3Desc'],
+                recordData['Charge3WarrantNumber'],
             ])
 
     wb = openpyxl.Workbook()
