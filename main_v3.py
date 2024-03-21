@@ -7,7 +7,7 @@ def parsePDF(pdfPath):
     with open(pdfPath, 'rb') as f:
         reader = PyPDF2.PdfReader(f)
         text = []
-        for page in range(reader.numPages):
+        for page in range(len(reader.pages)):
             text.append(reader.getPage(page).extractText())
         return '\n'.join(text)
 
