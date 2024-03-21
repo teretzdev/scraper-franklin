@@ -83,7 +83,6 @@ def processAndWriteToXlsx():
     ws.title = "Inmate Records"
     headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
     ws.append(headers)  # Append the headers to the worksheet
-    # Removed duplicate line appending headers to the worksheet
 
     pdf_path = 'Franklin.pdf'
     pdf_text = parsePDF(pdf_path)
@@ -95,6 +94,7 @@ def processAndWriteToXlsx():
         print("No records found in the PDF.")
         return
     processed_count = 0
+
 def processAndWriteToXlsx():
     ...
     for record in records:
@@ -130,8 +130,6 @@ def processAndWriteToXlsx():
             print(f"Skipped record due to empty last name or format mismatch: {record}")
     print(f"Total records processed: {processed_count}")
     print(f"Total records expected: {len(records)}")
-    wb.save('inmate_records.xlsx')
-    print(len(records))
     wb.save('inmate_records.xlsx')
 
 
