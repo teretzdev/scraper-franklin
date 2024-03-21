@@ -86,7 +86,7 @@ def processAndWriteToXlsx():
 
     pdfPath = 'Franklin.pdf'
     pdfText = parsePDF(pdfPath)
-    recordPattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?)')
+    recordPattern = re.compile(r'\n(?=[A-Z]+,\s*[A-Z]+(?:\s+[A-Z]+)?\s+\d{2}/\d{2}/\d{4})')  # Adjusted to include a date pattern
     records = recordPattern.split(pdfText)[1:]  # Skip the first entry which is the header
     processed_count = 0
     for record in records:
