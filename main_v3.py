@@ -88,26 +88,25 @@ def processAndWriteToXlsx():
     ws.title = "Inmate Records"
     headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
     ws.append(headers)
-        for r in records:
-            constRecord = prepareRecordForCsv(r)
-            if constRecord['LastName'] != '': # Ensuring only valid records are added
-            if constRecord['LastName'] != '':
-                ws.append([
-                    constRecord['LastName'],
-                    constRecord['FirstName'],
-                    constRecord['MiddleName'],
-                    constRecord['Address'],
-                    constRecord['City'],
-                    constRecord['State'],
-                    constRecord['ZipCode'],
-                    constRecord['ArrestStatus'],
-                    constRecord['Charge1Desc'],
-                    constRecord['Charge1WarrantNumber'],
-                    constRecord['Charge2Desc'],
-                    constRecord['Charge2WarrantNumber'],
-                    constRecord['Charge3Desc'],
-                    constRecord['Charge3WarrantNumber'],
-                ])
+    for r in records:
+        constRecord = prepareRecordForCsv(r)
+        if constRecord['LastName'] != '':
+            ws.append([
+                constRecord['LastName'],
+                constRecord['FirstName'],
+                constRecord['MiddleName'],
+                constRecord['Address'],
+                constRecord['City'],
+                constRecord['State'],
+                constRecord['ZipCode'],
+                constRecord['ArrestStatus'],
+                constRecord['Charge1Desc'],
+                constRecord['Charge1WarrantNumber'],
+                constRecord['Charge2Desc'],
+                constRecord['Charge2WarrantNumber'],
+                constRecord['Charge3Desc'],
+                constRecord['Charge3WarrantNumber'],
+            ])
 
     print(len(records))
     wb.save('inmate_records.xlsx')
