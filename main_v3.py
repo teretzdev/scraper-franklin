@@ -82,9 +82,7 @@ def processAndWriteToXlsx():
     ws = wb.active
     ws.title = "Inmate Records"
     headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber']
-    ws.append(headers)
-    # The following lines should be added to ensure 'records' is defined within the function scope
-    ws.append(headers)  # This line is correct and should remain as is
+    # Removed duplicate line appending headers to the worksheet
 
     pdf_path = 'Franklin.pdf'
     pdf_text = parsePDF(pdf_path)
@@ -119,8 +117,7 @@ def processAndWriteToXlsx():
                 recordData['Charge3WarrantNumber'],
             ])
             processed_count += 1
-        elif not recordData['LastName']:
-            print(f"Skipped record due to empty last name or format mismatch: {record}")
+        # Removed duplicate else block
         else:
             print(f"Skipped record due to empty last name or format mismatch: {record}")
     print(f"Total records processed: {processed_count}")
