@@ -68,7 +68,8 @@ def processAndWriteToCsv():
     pdfPath = 'output.pdf'
     pdfText = parsePDF(pdfPath)
     print(pdfText)
-    constRecords = pdfText.split('\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)/')
+    recordPattern = re.compile(r'\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)')
+    constRecords = recordPattern.split(pdfText)
     records = []
     for i in range(len(constRecords)):
         records = records + constRecords[i].split('\n')
