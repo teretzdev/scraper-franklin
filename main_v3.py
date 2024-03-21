@@ -7,8 +7,8 @@ def parsePDF(pdfPath):
     with open(pdfPath, 'rb') as f:
         reader = PyPDF2.PdfReader(f)
         text = []
-        for page in range(len(reader.pages)):
-            text.append(reader.getPage(page).extractText())
+        for page in reader.pages:
+            text.append(page.extract_text())
         return '\n'.join(text)
 
 def prepareRecordForCsv(record):
