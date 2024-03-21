@@ -11,13 +11,13 @@ def parsePDF(pdfPath):
             text.append(page.extract_text())
     return '\n'.join(text)
 
-def prepareRecordForCsv(record):    non_record_patterns = [
-        r'MISC\. ORDINANCE VIOLATION',
-        r'© \d{4} - \d{4} Omnigo Software St\. Louis MO omnigo\.com'
-    ]
-    for pattern in non_record_patterns:
-        if re.search(pattern, record):
-            return None  # Return None to indicate this is not a record
+def prepareRecordForCsv(record):     non_record_patterns = [
+         r'MISC\. ORDINANCE VIOLATION',
+         r'© \d{4} - \d{4} Omnigo Software St\. Louis MO omnigo\.com'
+     ]
+     for pattern in non_record_patterns:
+         if re.search(pattern, record):
+             return None  # Return None to indicate this is not a record
 
     lastName, firstName, middleName = '', '', ''
     fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
