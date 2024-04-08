@@ -1,0 +1,6 @@
+echo Processing PDF...
+python pdf_preprocesser.py
+echo PDF processed, generating CSV...
+python main_v4.py
+echo CSV generation complete.
+pause

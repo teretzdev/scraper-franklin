@@ -1,0 +1,88 @@
+const fs = require('fs');
+const path = require('path');
+const patterns = require('./headersMatcher');
+const writeToCsv = require('./csvWriter');
+
+// Function to extract and prepare record details for CSV
+function prepareRecordForCsv(record) {
+  // Splitting the full name
+  const fullNameMatch = record.match(patterns.fullNamePattern);
+  let lastName = '', firstName = '', middleName = '';
+  if (fullNameMatch) {
+    const nameParts = fullNameMatch[0].split(' ');
+    lastName = nameParts[0] || 'N/A';
+    firstName = nameParts[1] || 'N/A';
+    middleName = nameParts.slice(2).join(' ') || 'N/A';
+  }
+
+  // Extracting address and further splitting into City, State, and ZipCode
+  const addressMatch = record.match(patterns.addressPattern);
+  let address = '', city = '', state = '', zipCode = '';
+  if (addressMatch) {
+    address = addressMatch[0];
+    // Additional logic to split address into City, State, and ZipCode
+    // Example: "123 Main St, Springfield, MO 65807"
+    const addressParts = address.split(', ');
+    city = addressParts[1] || 'N/A';
+    state = addressParts[2].split(' ')[0] || 'N/A';
+    zipCode = addressParts[2].split(' ')[1] || 'N/A';
+  }
+
+  // Extracting ArrestStatus
+  const arrestStatusMatch = record.match(patterns.arrestStatusPattern);
+  const arrestStatus = arrestStatusMatch ? arrestStatusMatch[0].trim() : 'N/A';
+
+  // Extracting Charges
+  const chargesMatches = Array.from(record.matchAll(patterns.chargePattern));
+  const charges = chargesMatches.map(match => ({
+    desc: match[1] ? match[1].trim() : 'N/A',
+    warrantNumber: match[2] ? match[2].trim() : 'N/A'
+  }));
+
+  // Preparing the CSV record object
+  const csvRecord = {
+    LastName: lastName,
+    FirstName: firstName,
+    MiddleName: middleName,
+    Address: address,
+    City: city,
+    State: state,
+    ZipCode: zipCode,
+    ArrestStatus: arrestStatus,
+    Charge1Desc: charges[0] ? charges[0].desc : 'N/A',
+    Charge1WarrantNumber: charges[0] ? charges[0].warrantNumber : 'N/A',
+    Charge2Desc: charges[1] ? charges[1].desc : 'N/A',
+    Charge2WarrantNumber: charges[1] ? charges[1].warrantNumber : 'N/A',
+    Charge3Desc: charges[2] ? charges[2].desc : 'N/A',
+    Charge3WarrantNumber: charges[2] ? charges[2].warrantNumber : 'N/A',
+  };
+
+  return csvRecord;
+}
+
+
+async function processAndWriteToCsv() {
+  try {
+    // Corrected to use fs.promises.readFile for promise-based operation
+    const data = await fs.promises.readFile('./extracted_text.json', 'utf8');
+    const records = JSON.parse(data);
+    const csvData = records.map(record => prepareRecordForCsv(record));
+
+    const headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber'];
+
+    await writeToCsv('./output.csv', headers, csvData); // Ensure writeToCsv supports promises or uses a callback pattern
+
+    const totalRecordCount = await readTotalRecordCount();
+    console.log(`CSV file has been written successfully. Total possible records: ${totalRecordCount}, Actual records processed: ${csvData.length}`);
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
+
+
+async function readTotalRecordCount() {
+  const countContent = await fs.promises.readFile(path.join(__dirname, 'record_count.txt'), 'utf8');
+  return parseInt(countContent, 10);
+}
+
+processAndWriteToCsv();

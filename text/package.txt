@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "csv-writer": "^1.6.0",
+    "excel4node": "^1.8.2",
+    "fs": "^0.0.1-security",
+    "pdf-parse": "^1.1.1",
+    "re": "^0.1.4"
+  }
+}

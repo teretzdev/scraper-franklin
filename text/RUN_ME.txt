@@ -1,0 +1,6 @@
+echo Processing PDF...
+python pdf_preprocesser.py
+echo PDF processed, generating CSV...
+node main_v2.js
+echo CSV generation complete.
+pause

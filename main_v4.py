@@ -12,106 +12,73 @@ def parsePDF(pdfPath):
             text.append(page.extract_text())
     return '\n'.join(text)
 
-def prepareRecordForCsv(record):
-    non_record_patterns = [
+def isValidRecord(record):
+    # Check if a record is valid based on certain keywords or patterns
+    invalid_patterns = [
+        r'Franklin County Sheriff\'s Office',
+        r'Booking Records between',
+        r'ARRESTED ON',
+        r'BOOK AND RELEASE',
+        r'HOLD FOR',
+        r'SERVING SENTENCE',
+        r'WARRANT',
+        r'24 HOUR HOLD',
         r'MISC\. ORDINANCE VIOLATION',
         r'© \d{4} - \d{4} Omnigo Software St\. Louis MO omnigo\.com'
     ]
-    for pattern in non_record_patterns:
-        if re.search(pattern, record):
-            return None  # Return None to indicate this is not a record
+    return not any(re.search(pattern, record) for pattern in invalid_patterns)
 
-    fullNameMatch = re.match(r'([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)', record)
-    if fullNameMatch:
-        nameParts = fullNameMatch.groups()
-        lastName = nameParts[0].strip()
-        firstMiddleNameParts = nameParts[1].split()
-        firstName = firstMiddleNameParts[0] if firstMiddleNameParts else ''
-        middleName = ' '.join(firstMiddleNameParts[1:]) if len(firstMiddleNameParts) > 1 else ''
-    else:
-        lastName = ''
-        firstName = ''
-        middleName = ''
+def prepareRecordForCsv(record):
+    # Extracting the name
+    nameMatch = re.search(r'([A-Z]+), ([A-Z]+(?: [A-Z]+)?)', record)
+    lastName = nameMatch.group(1) if nameMatch else ''
+    firstName = nameMatch.group(2) if nameMatch else ''
 
-    addressMatch = re.match(r'(\d+ [A-Z\s]+),\s*([A-Z\s]+),\s*([A-Z]{2})\s*(\d+)', record)
-    if addressMatch:
-        addressParts = addressMatch.group().split(',')
-        address = addressParts[0].strip()
-        cityStateZip = addressParts[1].strip().split()
-        city = cityStateZip[0]
-        state = cityStateZip[1]
-        zipCode = cityStateZip[2] if len(cityStateZip) == 3 else ''
-    else:
-        address = ''
-        city = ''
-        state = ''
-        zipCode = ''
+    # Extracting the address
+    addressMatch = re.search(r'(\d+ [A-Z\s]+), ([A-Z\s]+), ([A-Z]{2}) (\d{5})', record)
+    address = addressMatch.group(1) if addressMatch else ''
+    city = addressMatch.group(2) if addressMatch else ''
+    state = addressMatch.group(3) if addressMatch else ''
+    zipCode = addressMatch.group(4) if addressMatch else ''
 
-    arrestStatusMatch = re.match(r'(ARRESTED ON\s+WARRANT|HOLD FOR USMS|24 HOUR HOLD|SERVING SENTENCE|HOLD FOR USMS|FEDERAL DETAINER|PROBATION VIOLATION|BOOK AND RELEASE)', record)
-    arrestStatus = arrestStatusMatch[0].replace('\n', ' ') if arrestStatusMatch else ''
-
-    chargesMatches = re.findall(r'([^\d]+)\s+(\d{2}[A-Z]{2}-CR\d{5,6})', record)
-    charges = [{'desc': match[0] or 'N/A', 'warrantNumber': match[1] or 'N/A'} for match in chargesMatches]
-    while len(charges) < 3:
-        charges.append({'desc': 'N/A', 'warrantNumber': 'N/A'})
+    # Extracting charges and warrant numbers
+    charges = re.findall(r'([A-Z\s]+) - (\d{2}-[A-Z]{2,5}-\d{3,5})', record)
+    charges = charges if charges else [('N/A', 'N/A')]
 
     return {
         'LastName': lastName,
         'FirstName': firstName,
-        'MiddleName': middleName,
         'Address': address,
         'City': city,
         'State': state,
         'ZipCode': zipCode,
-        'ArrestStatus': arrestStatus,
-        'Charge1Desc': charges[0]['desc'],
-        'Charge1WarrantNumber': charges[0]['warrantNumber'],
-        'Charge2Desc': charges[1]['desc'],
-        'Charge2WarrantNumber': charges[1]['warrantNumber'],
-        'Charge3Desc': charges[2]['desc'],
-        'Charge3WarrantNumber': charges[2]['warrantNumber'],
+        'Charges': charges
     }
 
 if __name__ == "__main__":
-    try:
-        pdfText = parsePDF('Franklin.pdf')
-        records = pdfText.split('\n')
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.append([
-            'LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus',
-            'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber'
-        ])
-        name_count = 0
-        processed_count = 0
-        for record in records:
-            recordData = prepareRecordForCsv(record)
-            if recordData is None:
-                continue  # Skip non-records
-            elif recordData['LastName']:
-                ws.append([
-                    recordData['LastName'],
-                    recordData['FirstName'],
-                    recordData['MiddleName'],
-                    recordData['Address'],
-                    recordData['City'],
-                    recordData['State'],
-                    recordData['ZipCode'],
-                    recordData['ArrestStatus'],
-                    recordData['Charge1Desc'],
-                    recordData['Charge1WarrantNumber'],
-                    recordData['Charge2Desc'],
-                    recordData['Charge2WarrantNumber'],
-                    recordData['Charge3Desc'],
-                    recordData['Charge3WarrantNumber'],
-                ])
-                processed_count += 1
-                name_count += 1
-            else:
-                print(f"Skipped record due to empty last name or format mismatch: {record}")
-        print(f"Total records processed: {processed_count}")
-        print(f"Total names counted: {name_count}")
-        print(f"Total records expected: {len(records)}")
-        wb.save('inmate_records.xlsx')
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    pdfText = parsePDF('Franklin.pdf')
+    records = pdfText.split('\n\n')  # Splitting records based on double newlines
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    headers = ['LastName', 'FirstName', 'Address', 'City', 'State', 'ZipCode'] + [f'Charge{i}Desc' for i in range(1, 4)] + [f'Charge{i}WarrantNumber' for i in range(1, 4)]
+    ws.append(headers)
+
+    processed_count = 0
+    for record in records:
+        if not isValidRecord(record):
+            continue
+
+        recordData = prepareRecordForCsv(record)
+        row = [
+            recordData['LastName'], recordData['FirstName'], recordData['Address'], recordData['City'],
+            recordData['State'], recordData['ZipCode']
+        ]
+
+        for charge in recordData['Charges'][:3]:
+            row.extend(charge)
+        ws.append(row)
+        processed_count += 1
+
+    print(f"Total records processed: {processed_count}")
+    wb.save('inmate_records.xlsx')

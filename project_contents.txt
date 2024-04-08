@@ -1,0 +1,243 @@
+List of JavaScript files and their sizes: 
+File: D:\Franklin\csvWriter.js Size: 598 bytes 
+File: D:\Franklin\headersMatcher.js Size: 306 bytes 
+File: D:\Franklin\main.js Size: 3236 bytes 
+File: D:\Franklin\main_v2.js Size: 3558 bytes 
+File: D:\Franklin\pdfParser.js Size: 328 bytes 
+ 
+===== Compiled JavaScript Files ===== 
+ 
+===== D:\Franklin\csvWriter.js ===== 
+// csvWriter.js
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+
+async function writeToCsv(filePath, headers, data) {
+	console.log('csvWrite / data pazssed to write CSV ', data)
+    const csvWriter = createCsvWriter({
+        path: filePath,
+        header: headers.map(header => ({ id: header, title: header })),
+    });
+
+    try {
+        await csvWriter.writeRecords(data);
+        console.log('CSV file has been written successfully.');
+    } catch (error) {
+        console.error('Error writing CSV file:', error);
+    }
+}
+
+module.exports = writeToCsv;
+ 
+===== D:\Franklin\headersMatcher.js ===== 
+const patterns = {
+    fullNamePattern: /([A-Z]+, [A-Z ]+)/,
+    addressPattern: /(\d+ [A-Z\s]+),\s*([A-Z\s]+),\s*(MO)\s*(\d+)/,
+    arrestStatusPattern: /(ARRESTED ON\s+WARRANT|HOLD FOR USMS|24 HOUR HOLD)/,
+    chargePattern: /([A-Z\s]+)\n(\d{2}[A-Z]{2}-CR\d{5})/g,
+};
+
+module.exports = patterns;
+ 
+===== D:\Franklin\main.js ===== 
+const fs = require('fs');
+const pdf = require('pdf-parse');
+const xl = require('excel4node');
+
+async function extractTextFromPdf(pdfPath) {
+  const dataBuffer = fs.readFileSync(pdfPath);
+  try {
+    const data = await pdf(dataBuffer);
+    console.log("PDF text extracted successfully.");
+    return data.text;
+  } catch (error) {
+    console.error("Error extracting text from PDF:", error);
+  }
+}
+
+function parsePdfContent(pdfText) {
+  const records = [];
+  let currentRecord = {};
+
+  // Placeholder regex patterns - ADJUST THESE BASED ON YOUR PDF
+  const personPattern = /([A-Z]+),\s*([A-Z]+(?:\s[A-Z]+)?)\s*(\d+\s[A-Z].+?),\s*([A-Z ]+),\s*([A-Z]{2})\s*(\d{5})\s*(ARRESTED ON WARRANT|24 HOUR HOLD|SERVING SENTENCE|HOLD FOR USMS|FEDERAL DETAINER|PROBATION VIOLATION|BOOK AND RELEASE)/;
+  const chargePattern = /([^\d]+)\s+(\d{2}[A-Z]{2}-CR\d{5,6})$/;
+
+  pdfText.split('\n').forEach(line => {
+    let match = line.match(personPattern);
+    if (match) {
+      if (Object.keys(currentRecord).length) records.push(currentRecord);
+      currentRecord = {
+        LastName: match[1],
+        FirstName: match[2],
+        Address: match[3],
+        City: match[4],
+        State: match[5],
+        ZipCode: match[6],
+        ArrestStatus: match[7],
+        Charges: []
+      };
+    } else {
+      match = line.match(chargePattern);
+      if (match && currentRecord.Charges) {
+        currentRecord.Charges.push({
+          Desc: match[1],
+          WarrantNumber: match[2]
+        });
+      }
+    }
+  });
+
+  if (Object.keys(currentRecord).length) records.push(currentRecord);
+  console.log("PDF content parsed successfully.");
+	console.log(records);
+  return records;
+}
+
+// Function to write the parsed data to an Excel file
+function writeToExcel(parsedRecords) {
+  const wb = new xl.Workbook();
+  const ws = wb.addWorksheet('Sheet 1');
+
+  // Define headers
+  const headers = ['LastName', 'FirstName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'ChargeDesc', 'WarrantNumber'];
+  headers.forEach((header, index) => ws.cell(1, index + 1).string(header));
+
+  // Populate data
+  let row = 2;
+  parsedRecords.forEach(record => {
+    record.Charges.forEach(charge => {
+      ws.cell(row, 1).string(record.LastName);
+      ws.cell(row, 2).string(record.FirstName);
+      ws.cell(row, 3).string(record.Address);
+      ws.cell(row, 4).string(record.City);
+      ws.cell(row, 5).string(record.State);
+      ws.cell(row, 6).string(record.ZipCode);
+      ws.cell(row, 7).string(record.ArrestStatus);
+      ws.cell(row, 8).string(charge.Desc);
+      ws.cell(row, 9).string(charge.WarrantNumber);
+      row++;
+    });
+  });
+
+  // Save the Excel file
+  wb.write('ParsedFranklinData.xlsx', function(err, stats) {
+    if (err) {
+      console.error("Error writing to Excel file:", err);
+    } else {
+      console.log("Data written to Excel file successfully.");
+    }
+  });
+}
+
+async function processPdf() {
+  const pdfPath = './Franklin.pdf'; // Replace with your PDF's path
+  const pdfText = await extractTextFromPdf(pdfPath);
+console.log(pdfText);
+  const parsedRecords = parsePdfContent(pdfText);
+  writeToExcel(parsedRecords);
+}
+
+processPdf();
+ 
+===== D:\Franklin\main_v2.js ===== 
+const fs = require('fs');
+const patterns = require('./headersMatcher');
+const writeToCsv = require('./csvWriter');
+
+function prepareRecordForCsv(record) {
+    const fullNameMatch = record.match(patterns.fullNamePattern);
+    let lastName = '', firstName = '', middleName = '';
+    if (fullNameMatch) {
+        const nameParts = fullNameMatch[0].split(', ');
+        lastName = nameParts[0];
+        const firstMiddleName = nameParts[1].split(' ');
+        firstName = firstMiddleName[0];
+        middleName = firstMiddleName.slice(1).join(' ');
+    }
+
+    const addressMatch = record.match(patterns.addressPattern);
+    let address = 'N/A', city = 'N/A', state = 'N/A', zipCode = 'N/A';
+    if (addressMatch) {
+        const addressParts = addressMatch[0].split(',');
+        address = addressParts[0].trim();
+        if (addressParts.length > 1) {
+            const cityStateZip = addressParts[1].trim().split(' ');
+            city = cityStateZip[0];
+            state = cityStateZip[1];
+            zipCode = cityStateZip[2];
+        }
+    }
+
+    const arrestStatusMatch = record.match(patterns.arrestStatusPattern);
+    const arrestStatus = arrestStatusMatch ? arrestStatusMatch[0].replace(/\n/g, ' ') : 'N/A';
+
+    const chargesMatches = Array.from(record.matchAll(patterns.chargePattern));
+    let charges = [];
+    for (let i = 0; i < chargesMatches.length; i++) {
+        charges.push({
+            desc: chargesMatches[i][1] || 'N/A',
+            warrantNumber: chargesMatches[i][2] || 'N/A'
+        });
+    }
+
+    // Ensuring the charges array has at least 3 elements filled with 'N/A' if less than 3 charges exist
+    while (charges.length < 3) {
+        charges.push({ desc: 'N/A', warrantNumber: 'N/A' });
+    }
+
+    return {
+        LastName: lastName,
+        FirstName: firstName,
+        MiddleName: middleName,
+        Address: address,
+        City: city,
+        State: state,
+        ZipCode: zipCode,
+        ArrestStatus: arrestStatus,
+        Charge1Desc: charges[0]?.desc ?? 'N/A',
+        Charge1WarrantNumber: charges[0]?.warrantNumber ?? 'N/A',
+        Charge2Desc: charges[1]?.desc ?? 'N/A',
+        Charge2WarrantNumber: charges[1]?.warrantNumber ?? 'N/A',
+        Charge3Desc: charges[2]?.desc ?? 'N/A',
+        Charge3WarrantNumber: charges[2]?.warrantNumber ?? 'N/A',
+    };
+}
+
+async function processAndWriteToCsv() {
+    try {
+        const data = await fs.promises.readFile('./extracted_text.json', 'utf8');
+        const textBlocks = JSON.parse(data);
+
+        let allRecords = [];
+        textBlocks.forEach(block => {
+            const records = block.split(/\n(?=[A-Z]+, [A-Z]+(?: [A-Z]+)?)/);
+            records.forEach(record => {
+                const preparedRecord = prepareRecordForCsv(record);
+                if (preparedRecord.LastName !== '') { // Ensuring only valid records are added
+                    allRecords.push(preparedRecord);
+                }
+            });
+        });
+
+        const headers = ['LastName', 'FirstName', 'MiddleName', 'Address', 'City', 'State', 'ZipCode', 'ArrestStatus', 'Charge1Desc', 'Charge1WarrantNumber', 'Charge2Desc', 'Charge2WarrantNumber', 'Charge3Desc', 'Charge3WarrantNumber'];
+        
+        await writeToCsv('./output.csv', headers, allRecords.flat());
+        console.log(`CSV file has been written successfully. Total records processed: ${allRecords.length}`);
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+}
+
+processAndWriteToCsv();
+ 
+===== D:\Franklin\pdfParser.js ===== 
+const fs = require('fs');
+
+const parsePDF = async (jsonPath) => {
+    const data = fs.readFileSync(jsonPath);  // Read the JSON file
+    const pagesText = JSON.parse(data);  // Parse the JSON content
+    return pagesText.join('\n');  // Combine text from all pages, separated by newlines
+};
+
+module.exports = parsePDF;
+ 
